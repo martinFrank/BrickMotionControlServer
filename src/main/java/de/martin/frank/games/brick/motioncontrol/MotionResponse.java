@@ -1,14 +1,18 @@
 package de.martin.frank.games.brick.motioncontrol;
 
-public class MotionReply {
+public class MotionResponse {
 
     private final long id;
     private final String content;
 
-    public MotionReply(long id, String content) {
+    public MotionResponse(long id, String content) {
         this.id = id;
         this.content = content;
     }
+
+    ;
+
+    private enum MotionControlType {CATERPILLAR, WHEEL}
 
     public long getId() {
         return id;

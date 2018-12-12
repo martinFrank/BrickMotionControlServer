@@ -1,30 +1,28 @@
 package de.martin.frank.games.brick.motioncontrol;
 
-import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.PinState;
+import com.pi4j.io.gpio.RaspiPin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import static de.martin.frank.games.brick.motioncontrol.GpioUtil.*;
 
 @SpringBootApplication
 public class App 
 {
     public static void main( String[] args )
     {
-        SpringApplication.run(App.class, args);
-
         setupGpio();
+        SpringApplication.run(App.class, args);
     }
 
     private static void setupGpio() {
+        setupPwm();
+        setAsDigitalOutput(RaspiPin.GPIO_01, PinState.LOW);
+        setAsDigitalOutput(RaspiPin.GPIO_02, PinState.LOW);
+        setAsPwmOutput(RaspiPin.GPIO_26);
 
-        // create gpio controller instance
-        final GpioController gpio = GpioFactory.getInstance();
-
-        // provision gpio pins #04 as an output pin and make sure is is set to LOW at startup
-        GpioPinDigitalOutput myLed = gpio.provisionDigitalOutputPin(
-                RaspiPin.GPIO_04,   // PIN NUMBER
-                "My LED",           // PIN FRIENDLY NAME (optional)
-                PinState.LOW);      // PIN STARTUP STATE (optional)
-
-        RaspiConfig.getSingleton().setGpioPinDigitalOutput(myLed, RaspiPin.GPIO_04);
     }
+
+
 }

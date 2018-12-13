@@ -18,9 +18,9 @@ public class App
 
     private static void setupGpio() {
         setupPwm();
-        setAsDigitalOutput(RaspiPin.GPIO_01, PinState.LOW);
         setAsDigitalOutput(RaspiPin.GPIO_02, PinState.LOW);
-        setAsPwmOutput(RaspiPin.GPIO_26);
+        setAsDigitalOutput(RaspiPin.GPIO_03, PinState.LOW);
+        setAsPwmOutput(RaspiPin.GPIO_23);
 
     }
 

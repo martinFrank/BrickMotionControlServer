@@ -10,51 +10,76 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import static de.martin.frank.games.brick.motioncontrol.GpioUtil.PWM_RANGE_PERCENT_FACTOR;
+
 @RestController
 public class MotionController {
 
-    private static final String SUCCESS = "set motion control pwma=%s pwmb=%s succeeded";
-    private static final String FAIL = "set motion control failed: %s";
+    private static final String SUCCESS_MESSAGE = "set motion control pwma=%s pwmb=%s succeeded";
+    private static final String FAIL_MESSAGE = "set motion control failed: %s";
+    private static final String NOT_IN_RANGE_MESSAGE = "%s:%d is not in range [%d,%d]";
+    private static final int PERCENTAGE_MIN = -100;
+    private static final int PERCENTAGE_MAX = 100;
+    private static final String PWMA = "pwma";
+    private static final String PWMB = "pwmb";
     private final AtomicLong counter = new AtomicLong();
 
     //http://localhost:8080/motion?pwma=33&pwmb=23
 
     @RequestMapping("/motion")
-    public MotionResponse motion(@RequestParam(value = "pwma", defaultValue = "0") String pwma,
-                                 @RequestParam(value = "pwmb", defaultValue = "0") String pwmb) {
-
-        System.out.printf("pwma / pwmb : " + pwma + " / " + pwmb);
-        System.out.println();
-
-        try{
-            Integer a = Integer.parseInt(pwma);
-            Integer b = Integer.parseInt(pwmb);
-            setPwm(a, RaspiPin.GPIO_01, RaspiPin.GPIO_02, RaspiPin.GPIO_26);
-
+    public MotionResponse motion(@RequestParam(value = PWMA, defaultValue = "0") String pwma,
+                                 @RequestParam(value = PWMB, defaultValue = "0") String pwmb) {
+        System.out.printf("pwma / pwmb : %s/%s%n", pwma, pwmb);
+        try {
+            int a = validateInput(pwma, PWMA);
+            int b = validateInput(pwmb, PWMB);
+            setPwm(a, RaspiPin.GPIO_04, RaspiPin.GPIO_05, RaspiPin.GPIO_26);
+            setPwm(b, RaspiPin.GPIO_02, RaspiPin.GPIO_03, RaspiPin.GPIO_23);
             return new MotionResponse(counter.incrementAndGet(),
-                    String.format(SUCCESS, Integer.toString(a), Integer.toString(b)));
-        }catch (IllegalArgumentException e){
+                    String.format(SUCCESS_MESSAGE, Integer.toString(a), Integer.toString(b)));
+        } catch (Exception e) {
             return new MotionResponse(counter.incrementAndGet(),
-                    String.format(FAIL, e.getMessage()));
+                    String.format(FAIL_MESSAGE, e.getMessage()));
         }
     }
 
-    private void setPwm(Integer value, Pin leftPin, Pin rightPin, Pin pwmPin) {
-        GpioPinDigitalOutput pin1 = GpioUtil.getDigitalOutput(leftPin);
-        GpioPinDigitalOutput pin2 = GpioUtil.getDigitalOutput(rightPin);
-        if (value > 0) {
-            pin1.high();
-            pin2.low();
-        } else if (value == 0) {
-            pin1.low();
-            pin2.low();
-        } else if (value < 0) {
-            pin1.low();
-            pin2.high();
+    private int validateInput(String pwma, String name) throws IllegalArgumentException {
+        int validInput = Integer.parseInt(pwma);
+        if (!isInBounds(PERCENTAGE_MIN, validInput, PERCENTAGE_MAX)) {
+            throw new IllegalArgumentException(String.format(NOT_IN_RANGE_MESSAGE,
+                    name,
+                    validInput,
+                    PERCENTAGE_MIN,
+                    PERCENTAGE_MAX));
         }
-        GpioPinPwmOutput pin26 = GpioUtil.getPwmOutput(pwmPin);
-        int aAbs = Math.abs(value);
-        pin26.setPwmRange(aAbs);
+        return validInput;
+
+    }
+
+    private boolean isInBounds(int min, int value, int max) {
+        return value >= min && value <= max;
+    }
+
+    private void setPwm(Integer value, Pin leftPin, Pin rightPin, Pin pwmPin) {
+        GpioPinDigitalOutput left = GpioUtil.getDigitalOutput(leftPin);
+        GpioPinDigitalOutput right = GpioUtil.getDigitalOutput(rightPin);
+        switch ((int) Math.signum(value)) {
+            case 1:
+                left.high();
+                right.low();
+                break;
+            case 0:
+                left.low();
+                right.low();
+                break;
+            case -1:
+                left.low();
+                right.high();
+                break;
+        }
+        GpioPinPwmOutput pwm = GpioUtil.getPwmOutput(pwmPin);
+        int aAbs = PWM_RANGE_PERCENT_FACTOR * Math.abs(value);
+        pwm.setPwm(aAbs);
     }
 
 }

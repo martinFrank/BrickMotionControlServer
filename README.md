@@ -94,3 +94,5 @@ now we have the following configuration:
 
 - [ ] provide webcam support
 
+- [ ] picture (or even beetter a video) of the server in action
+

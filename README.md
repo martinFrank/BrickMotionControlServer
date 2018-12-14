@@ -18,6 +18,50 @@ The `Motion Control Server` offers an REST API that lets you
 send steering signals to the Raspi. These steering signals are
 processed by the Raspi and the corresponding Pins are set.
 
+## how to use
+you have to clone / download the project and build it. This
+project uses maven build. Once done you copy the created jar
+file (right now it should be `server-1.0-SNAPSHOT.jar`) to
+the Raspi and run it using
+
+`$>sudo java -jar server-1.0-SNAPSHOT.jar`
+
+it takes some for the server to start up (10 seconds on my
+Raspi 3B+) but be patient. But when it's up you can change
+the Motion Control with this simpe HTTP-Call (any browser
+can do this for you)
+
+`http://localhost:8080/motion?pwma=33&pwmb=-23`
+
+this set
+ - the pulse-width-modultation pin A to +33%
+ - the digital pin (A left) to high;
+ - the digital pin (A right) to low;
+ - the pulse-width-modultation pin b to -23%
+ - the digital pin (A left) to low;
+ - the digital pin (A right) to high;
+
+the purpose of this is to let you control the directions
+easily and don't need too much pwm pins (only one pwm per
+motor)
+
+## wiring the motors
+
+![Image of Mobile Icon](docs/Wiring.png)
+
+The wiring requires separate hardware.
+
+ - AND-Gates
+ - H-Bridge
+ - Motors
+ - Power supply
+
+You have to split the pwm signal to both ports of the H-Bridge.
+you can use AND-gates for that. Personally i run my motors
+with 7.2V but it's up to you how much you power your engines.
+
+
+
 ## dependencies
 
  - The REST service is based on the springframework

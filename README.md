@@ -60,16 +60,35 @@ You have to split the pwm signal to both ports of the H-Bridge.
 you can use AND-gates for that. Personally i run my motors
 with 7.2V but it's up to you how much you power your engines.
 
+## configuration
 
+right now the configuration is hard-coded, you'll have to
+change the programm code on yourself. It's intented to
+provide easily configuration in future releases. But right
+now we have the following configuration:
+
+ - Pin A left: `RaspiPin.GPIO_04`
+ - Pin A right: `RaspiPin.GPIO_05`
+ - Pin A pwm: `RaspiPin.GPIO_26`
+
+ <br>
+
+ - Pin B left: `RaspiPin.GPIO_02`
+ - Pin B right: `RaspiPin.GPIO_03`
+ - Pin B pwm: `RaspiPin.GPIO_23`
 
 ## dependencies
 
  - The REST service is based on the springframework
- - The Raspi pin library is based the on pi4j framework, with itself is depending on wiringpi project
+ - The Raspi pin library is based the on pi4j framework, with
+ itself is depending on wiringpi project
 
 
 ## Features (planned)
 
+[ ] easy configuration
+
 [ ] send current configuration back to the app
+
 [ ] provide webcam support
 

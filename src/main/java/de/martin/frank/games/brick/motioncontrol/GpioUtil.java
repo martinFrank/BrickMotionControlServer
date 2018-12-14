@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class GpioUtil {
 
-    public static final int PWM_RANGE_PERCENT_FACTOR = 1000;
+    public static final int PWM_RANGE_PERCENT_FACTOR = 10;
     private static final int PWM_RANGE = 1000;
     private static Map<Pin, GpioPinDigitalOutput> outputPins = new HashMap<>();
     private static Map<Pin, GpioPinPwmOutput> pwmPins = new HashMap<>();
@@ -16,7 +16,7 @@ public class GpioUtil {
     public static void setupPwm() {
         Gpio.pwmSetMode(Gpio.PWM_MODE_BAL);//Gpio.PWM_MODE_MS;
         Gpio.pwmSetRange(PWM_RANGE);
-        Gpio.pwmSetClock(2000);
+        Gpio.pwmSetClock(500);
     }
 
     public static boolean setAsDigitalOutput(Pin pin, PinState state) {
@@ -25,6 +25,7 @@ public class GpioUtil {
             outputPins.put(pin, output);
             return true;
         } catch (Exception e) {
+            System.out.println("error: " + e.getMessage());
             return false;
         }
     }
@@ -36,10 +37,11 @@ public class GpioUtil {
     public static boolean setAsPwmOutput(Pin pin) {
         try {
             GpioPinPwmOutput pwm = GpioFactory.getInstance().provisionPwmOutputPin(pin);
-            pwm.setPwmRange(PWM_RANGE);
+//            pwm.setPwmRange(PWM_RANGE);
             pwmPins.put(pin, pwm);
             return true;
         } catch (Exception e) {
+            System.out.println("error: " + e.getMessage());
             return false;
         }
     }

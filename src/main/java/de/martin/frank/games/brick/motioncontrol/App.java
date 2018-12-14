@@ -22,6 +22,10 @@ public class App
         setAsDigitalOutput(RaspiPin.GPIO_03, PinState.LOW);
         setAsPwmOutput(RaspiPin.GPIO_23);
 
+        setAsDigitalOutput(RaspiPin.GPIO_04, PinState.LOW);
+        setAsDigitalOutput(RaspiPin.GPIO_05, PinState.LOW);
+        setAsPwmOutput(RaspiPin.GPIO_26);
+
     }
 
 
